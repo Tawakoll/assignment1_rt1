@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(turtlesim_controller)
+project(assignment1_rt1)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -11,11 +11,11 @@ find_package(rclcpp REQUIRED)
 find_package(turtlesim REQUIRED)
 find_package(geometry_msgs REQUIRED)
 
-add_executable(turtlesim_controller src/turtlesim_controller.cpp)
-ament_target_dependencies(turtlesim_controller rclcpp turtlesim rclcpp turtlesim geometry_msgs)
+add_executable(distance_controller src/distance_controller.cpp)
+ament_target_dependencies(distance_controller rclcpp turtlesim rclcpp turtlesim geometry_msgs)
 
 install(TARGETS 
-        turtlesim_controller
+        distance_controller
         DESTINATION lib/${PROJECT_NAME}
 
 )
