@@ -10,10 +10,11 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(turtlesim REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 
 
 add_executable(distance_controller src/distance_controller.cpp)
-ament_target_dependencies(distance_controller rclcpp turtlesim rclcpp turtlesim geometry_msgs )
+ament_target_dependencies(distance_controller rclcpp turtlesim rclcpp turtlesim geometry_msgs std_msgs)
 
 install(TARGETS 
         distance_controller
