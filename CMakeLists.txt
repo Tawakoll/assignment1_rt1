@@ -14,10 +14,19 @@ find_package(std_msgs REQUIRED)
 
 
 add_executable(distance_controller src/distance_controller.cpp)
+add_executable(ui_node src/ui.cpp)
 ament_target_dependencies(distance_controller rclcpp turtlesim rclcpp turtlesim geometry_msgs std_msgs)
+ament_target_dependencies(ui_node rclcpp std_msgs)
+
 
 install(TARGETS 
         distance_controller
+        DESTINATION lib/${PROJECT_NAME}
+
+)
+
+install(TARGETS 
+        ui_node
         DESTINATION lib/${PROJECT_NAME}
 
 )
