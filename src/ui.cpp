@@ -16,7 +16,7 @@ class UInode: public rclcpp::Node
         velocity_publisher = this->create_publisher<std_msgs::msg::Float32>("velocity", 10);
         distance_subscriber = this->create_subscription<std_msgs::msg::Float32>("distance_t1_t2", 10,std::bind(&UInode::topic_callback_distance, this, _1));
 
-        timer_ = this->create_wall_timer(std::chrono::milliseconds(1000),std::bind(&UInode::timer_callback, this));
+        timer_ = this->create_wall_timer(std::chrono::milliseconds(500),std::bind(&UInode::timer_callback, this));
     }
 
         private:
