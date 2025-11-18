@@ -90,10 +90,11 @@ class DistanceController: public rclcpp::Node
                 && x_2 <Max_x_or_y  && x_2 > Min_x_or_y && y_2 <Max_x_or_y  && y_2 > Min_x_or_y 
                 &&   time_counter < TIME_LIMIT )
                 {
-                    time_counter++; // increment 20ms for the time counter to contribute to the 1000ms time limit for moving the turtle
-                     
+                
+                    //time_counter++; // increment 20ms for the time counter to contribute to the 1000ms time limit for moving the turtle
                     // print for debugging purposes
                     RCLCPP_INFO(this->get_logger(), "Time counter =  %u ",time_counter);
+
                     message.linear.x = turtle_velocity;
                     message.angular.z = 0.0;
                     switch(turtle_choice)
@@ -102,12 +103,20 @@ class DistanceController: public rclcpp::Node
                                                         
                             RCLCPP_INFO(this->get_logger(), "congrats you chose turtle 1! moving at velocity: '%f' ", turtle_velocity);
 
+                            time_counter++; // increment 20ms for the time counter to contribute to the 1000ms time limit for moving the turtle
+                            // I add the timer incrremet in the switch case because I know by debugging that It will increment if we enter the else if moving condition, 
+                            // it doesn't affect the overall logic of the program but it makes sense to place it here.
 
                             publisher_t1->publish(message);
                     break;
 
                     case TURTLE2:
                             RCLCPP_INFO(this->get_logger(), "congrats you chose turtle 2! moving at velocity: '%f' ", turtle_velocity);
+                            
+                            time_counter++; // increment 20ms for the time counter to contribute to the 1000ms time limit for moving the turtle
+                            // I add the timer incrremet in the switch case because I know by debugging that It will increment if we enter the else if moving condition, 
+                            // it doesn't affect the overall logic of the program but it makes sense to place it here.
+
                             publisher_t2->publish(message);    
                     break;
 
