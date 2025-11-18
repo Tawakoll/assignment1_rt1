@@ -7,7 +7,9 @@
 #include <cmath> // note to self don't need to add standard packages in cmake...
 #define TURTLE1 1
 #define TURTLE2 2
-#define TOLERANCE 1.1
+#define TOLERANCE 1.7f //tolerance distance between turtles to stop the moving turtle "using f for float at the end to explicitly type cast it."
+#define Max_x_or_y 10.0f // maximum distance of x or y to the wall from the center to the right for x , y idk :D
+#define Min_x_or_y 2.1f // minimum distance of x or y to the wall redundant same as tolerance but for clarity and readability , measured from center to left for x, y idk :D
 using std::placeholders::_1;
 
 class DistanceController: public rclcpp::Node
@@ -43,37 +45,69 @@ class DistanceController: public rclcpp::Node
             dist_t1_t2 = std::sqrt(std::pow( (x_1-x_2) , 2 ) + std::pow( (y_1-y_2) , 2 )) ;
             distance_message.data = dist_t1_t2;
             distance_publisher-> publish(distance_message);
+            RCLCPP_INFO(this->get_logger(), "The distance is '%f' ", dist_t1_t2);
 
             //display the input from ui_node for debugging purposes
            // RCLCPP_INFO(this->get_logger(), "The turtle choice is '%u' and velocity is '%f' ", turtle_choice, turtle_velocity);
 
+            // My logic is basically if the distance between turtles is less than the tolerance value or if close to hit the wall , stop the moving turtle by publishing zero velocity 
+            //else if (negation of the first condition) move the chosen turtle at the given velocity.
+            // else print error message. "we should never reach this else statement "
 
-                switch(turtle_choice)
+            if ( dist_t1_t2 < TOLERANCE  || x_1 >Max_x_or_y  || x_1 < Min_x_or_y || y_1 >Max_x_or_y  || y_1 < Min_x_or_y || x_2 >Max_x_or_y  || x_2 < Min_x_or_y || y_2 >Max_x_or_y  || y_2 < Min_x_or_y )
+                {
+                    //stop the moving turtle by publishing zero velocity
+                    RCLCPP_INFO(this->get_logger(), "Stopping the moving turtle%u! ",turtle_choice);
+                    message.linear.x = 0.0;
+                    message.angular.z = 0.0;
+
+                    switch(turtle_choice)
                     {
                     case TURTLE1: 
-                                                        
-                            //rcppc used for debugging purposes
-                            RCLCPP_INFO(this->get_logger(), "congrats you chose turtle 1! moving at velocity: '%f' ", turtle_velocity);
-                            message.linear.x = turtle_velocity;
-                            message.angular.z = 0.0;
-
                             publisher_t1->publish(message);
                     break;
 
                     case TURTLE2:
-                            //rcppc used for debugging purposes
-                            RCLCPP_INFO(this->get_logger(), "congrats you chose turtle 2! moving at velocity: '%f' ", turtle_velocity);
-                            message.linear.x = turtle_velocity;
-                            message.angular.z = 0.0;
                             publisher_t2->publish(message);    
                     break;
 
                     default:
                     //print error message
-                        RCLCPP_INFO(this->get_logger(), "The input for turtle choice  is invalid ");
+                        RCLCPP_INFO(this->get_logger(), "error in stopping the turtle , The input for turtle choice  is invalid ");
                         break;
                     }
                     
+                }
+    //moving condition is basically the negation of the stopping condition.
+    else if ( dist_t1_t2 >= TOLERANCE  && x_1 <Max_x_or_y  && x_1 > Min_x_or_y && y_1 <Max_x_or_y  && y_1 > Min_x_or_y && x_2 <Max_x_or_y  && x_2 > Min_x_or_y && y_2 <Max_x_or_y  && y_2 > Min_x_or_y )
+                {
+                    message.linear.x = turtle_velocity;
+                    message.angular.z = 0.0;
+                    switch(turtle_choice)
+                    {
+                    case TURTLE1: 
+                                                        
+                            RCLCPP_INFO(this->get_logger(), "congrats you chose turtle 1! moving at velocity: '%f' ", turtle_velocity);
+
+
+                            publisher_t1->publish(message);
+                    break;
+
+                    case TURTLE2:
+                            RCLCPP_INFO(this->get_logger(), "congrats you chose turtle 2! moving at velocity: '%f' ", turtle_velocity);
+                            publisher_t2->publish(message);    
+                    break;
+
+                    default:
+                    //print error message
+                        RCLCPP_INFO(this->get_logger(), "error in moving the turtle, The input for turtle choice  is invalid ");
+                        break;
+                    }
+                }
+        else
+                {
+                    RCLCPP_INFO(this->get_logger(), "you reached an invalid state xd !");
+                }  
            
                 
         }
