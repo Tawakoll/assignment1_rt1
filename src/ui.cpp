@@ -4,6 +4,9 @@
 #include <iostream> //interaction with the user for input and displaying the distance
 
 using std::placeholders::_1;
+
+
+
 class UInode: public rclcpp::Node
 {
     public:
@@ -13,21 +16,27 @@ class UInode: public rclcpp::Node
         velocity_publisher = this->create_publisher<std_msgs::msg::Float32>("velocity", 10);
         distance_subscriber = this->create_subscription<std_msgs::msg::Float32>("distance_t1_t2", 10,std::bind(&UInode::topic_callback_distance, this, _1));
 
-        timer_ = this->create_wall_timer(std::chrono::milliseconds(20),std::bind(&UInode::timer_callback, this)); // callback every one second as defined in the assignment
+        timer_ = this->create_wall_timer(std::chrono::milliseconds(1000),std::bind(&UInode::timer_callback, this));
     }
 
         private:
         void timer_callback()
-        {   
+        {   int temp_turtle_choice = 0;
             std::cout<< "select your turtle! press 1 or 2.--- Current distance between turtles = "<< distance << std::endl;
-            std::cin>> turtle_choice;
-            std::cout<< "Enter the speed for your turtle'%d'"<< turtle_choice<< std::endl;
+            std::cin>> temp_turtle_choice;
+            std::cout<< "Enter the speed for your turtle"<< turtle_choice<< std::endl;
             std::cin>> turtle_velocity;
 
             velocity_msg.data = turtle_velocity;
             velocity_publisher-> publish(velocity_msg);
+            
+            turtle_choice  = (uint8_t)temp_turtle_choice;
+            turtle_msg.data = turtle_choice; 
+            // comments on why I casted to uint8_t:
+            // when i used to send it as it it was reading the ascii value of '1' instead of integer 1. 
+            // casting now ensures that it will be read as a number
+            //I should've just sent an integer message from the start HAHAHAH i wanted to be efficient. :D
 
-            turtle_msg.data = turtle_choice;
            turtle_publisher-> publish(turtle_msg);
 
         }
@@ -50,13 +59,14 @@ class UInode: public rclcpp::Node
         rclcpp::Publisher<std_msgs::msg::UInt8>::SharedPtr turtle_publisher; // decalred the turtle choice publisher in this class & node to be read from the other node
         std_msgs::msg::UInt8 turtle_msg; //message container for turtle choice to be published
         float distance = 0, turtle_velocity = 0;
-        unsigned char turtle_choice = 0;
-
+        uint8_t turtle_choice = 0;
 };
 int main(int argc, char * argv[])
 {
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<UInode>());
+
+    rclcpp::spin(std::make_shared<UInode>()); 
+
     rclcpp::shutdown();
     return 0;
 }
